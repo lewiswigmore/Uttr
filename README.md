@@ -1,4 +1,6 @@
-# Uttr Note-Taking App
+
+
+## <img src="./src/logo-text.svg" alt="Logo" height="17"/> : A Note-Taking App
 
 Uttr is a user-friendly note-taking application built with React and the Microsoft Fluent Design System. This app allows users to create, edit, and manage notes efficiently. Please note this is a learning project for the React framework.
 
