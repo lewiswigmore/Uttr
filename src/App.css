@@ -8,12 +8,25 @@ body, html {
 }
 
 #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  display: flex; /* Makes the root element a flex container */
+  justify-content: center; /* Centers the children of the root element horizontally */
+  align-items: center; /* Centers the children of the root element vertically */
+  height: 100vh; /* Makes the root element 100% of the viewport height */
 }
 
-.App {
-  text-align: center;
+.app-logo {
+  height: 3vmin; /* Makes the logo 3% of the viewport height */
+  width: auto; /* Keeps the aspect ratio of the logo */
+  display: block; /* Removes the line break after the logo */
+  margin: 0 auto; /* Centers the logo horizontally */
+  padding: 3vmin; /* Adds some padding around the logo */
+}
+
+.app-header {
+  min-height: 5vh; /* Makes the header 5% of the viewport height */
+  display: flex; /* Makes the header a flex container */
+  flex-direction: column; /* Stacks the children of the header vertically */
+  align-items: center; /* Centers the children of the header horizontally */
+  justify-content: center; /* Centers the children of the header vertically */
+  color: white; /* Sets the text color of the header */
 }

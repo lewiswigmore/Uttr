@@ -1,14 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
+ReactDOM.render(
+  <FluentProvider theme={webLightTheme}>
     <App />
-  </React.StrictMode>
+  </FluentProvider>,
+  document.getElementById('root'),
 );
 
 reportWebVitals(console.log);
