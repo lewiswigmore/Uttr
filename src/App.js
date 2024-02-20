@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NoteForm from './components/NoteForm';
 import Note from './components/Note';
 import Logo from './logo-text.svg';
+import { Text } from '@fluentui/react-components';
 import './App.css';
 
 function App() {
@@ -25,7 +26,10 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <img src={Logo} alt="Uttr Logo" className="app-logo" />
+        <div className="logo-container">
+          <img src={Logo} alt="Uttr Logo" className="app-logo" />
+        </div>
+        <Text className="app-tagline" italic="true" weight="medium" size="large">A minimalist note-taking app.</Text>
       </header>
       <main className="app-main">
         <NoteForm addNote={addNote} />

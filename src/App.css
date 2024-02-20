@@ -14,19 +14,40 @@ body, html {
   height: 100vh; /* Makes the root element 100% of the viewport height */
 }
 
+.logo-container {
+  display: flex; /* Aligns items horizontally */
+  align-items: center; /* Centers items vertically */
+}
+
 .app-logo {
+  /* background-color: blue; */
   height: 3vmin; /* Makes the logo 3% of the viewport height */
   width: auto; /* Keeps the aspect ratio of the logo */
+  max-height: 75px; /* Maximum size */
+  min-height: 25px; /* Minimum size */
   display: block; /* Removes the line break after the logo */
   margin: 0 auto; /* Centers the logo horizontally */
-  padding: 3vmin; /* Adds some padding around the logo */
+  padding: 2vmin; /* Adds some padding around the logo */
+}
+
+.app-tagline {
+  /* background-color: red; */
+  font-size: 1rem; /* Sets the font size to 1rem */
+  color: #333; /* Sets the text color to a dark gray */
+  margin: 0 auto; /* Centers the tagline horizontally */
+  padding: 2vmin; /* Adds some padding around the tagline */
 }
 
 .app-header {
+  /* background-color: green; */
   min-height: 5vh; /* Makes the header 5% of the viewport height */
   display: flex; /* Makes the header a flex container */
   flex-direction: column; /* Stacks the children of the header vertically */
   align-items: center; /* Centers the children of the header horizontally */
   justify-content: center; /* Centers the children of the header vertically */
   color: white; /* Sets the text color of the header */
+}
+
+.fluent-button {
+  margin: 5px 0 5px 20px !important; /* Using !important to override Fluent UI's styles */
 }

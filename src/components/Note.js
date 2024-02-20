@@ -5,7 +5,7 @@ const Note = ({ id, content, deleteNote }) => {
   return (
     <div>
       {content}
-      <Button onClick={() => deleteNote(id)}>Delete Note</Button>
+      <Button className="fluent-button" onClick={() => deleteNote(id)}>Delete Note</Button>
     </div>
   );
 };

@@ -13,7 +13,7 @@ const NoteForm = ({ addNote }) => {
   return (
     <form onSubmit={handleSubmit}>
       <Input value={input} onChange={(e) => setInput(e.target.value)} />
-      <Button appearance="primary" type="submit">Add Note</Button>
+      <Button className="fluent-button" appearance="primary" type="submit">Add Note</Button>
     </form>
   );
 };
