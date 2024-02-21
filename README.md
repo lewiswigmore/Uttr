@@ -52,7 +52,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Stats
 
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=lewiswigmore.Uttr)&nbsp;![Version](https://img.shields.io/github/last-commit/lewiswigmore/Uttr)
-<br>
-
-[![Leave a note](https://img.shields.io/badge/Leave%20a%20note-0078D7?style=flat&logo=gitbook&logoColor=white)](https://github.com/lewiswigmore/lewiswigmore/issues/2)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FF813F?style=flat&logo=buy-me-a-coffee&logoColor=white)](https://paypal.me/lewisjwigmore)
