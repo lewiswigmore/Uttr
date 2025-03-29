@@ -25,7 +25,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone the repository:
    ```
-   git clone https://github.com/lewiswigmore/uttr.git
+   git clone https://github.com/0xlews/uttr.git
    ```
 2. Navigate to the project directory:
    ```
@@ -51,4 +51,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Stats
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=lewiswigmore.Uttr)&nbsp;![Version](https://img.shields.io/github/last-commit/lewiswigmore/Uttr)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=0xlews.Uttr)&nbsp;![Version](https://img.shields.io/github/last-commit/0xlews/Uttr)
