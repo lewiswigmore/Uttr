@@ -23,10 +23,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/0xlews/uttr.git
-   ```
+1. Clone the repository.
 2. Navigate to the project directory:
    ```
    cd uttr
@@ -48,7 +45,3 @@ These instructions will get you a copy of the project up and running on your loc
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## Stats
-
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=0xlews.Uttr)&nbsp;![Version](https://img.shields.io/github/last-commit/0xlews/Uttr)
