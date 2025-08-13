@@ -1,102 +1,404 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Card,
+  Text,
+  Button,
+  Input,
+  Badge,
+  makeStyles,
+  tokens,
+  Menu,
+  MenuTrigger,
+  MenuPopover,
+  MenuList,
+  MenuItem,
+} from '@fluentui/react-components';
+import RichEditor from './RichEditor';
+import DOMPurify from 'dompurify';
 import {
   DeleteRegular,
-  DeleteFilled,
+  EditRegular,
+  PinRegular,
+  PinFilled,
+  MoreVerticalRegular,
   bundleIcon,
-  iconFilledClassName,
-  iconRegularClassName,
 } from '@fluentui/react-icons';
-import { Input, Button, makeStyles } from '@fluentui/react-components';
+import { formatDate } from '../utils/noteUtils';
+import { tokenizeContentWithLinks, buildTitleIndex } from '../utils/linking';
 
-// Bundle the regular and filled versions of the Delete icon
-const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
+const PinIcon = bundleIcon(PinFilled, PinRegular);
 
-// Define styles for the icon
-const useIconStyles = makeStyles({
-  iconContainer: {
+const useStyles = makeStyles({
+  noteCard: {
+    height: '100%',
     display: 'flex',
-    alignItems: 'center',
-  },
-  actions: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: 'auto',
-  },
-  icon: {
-    fontSize: '1rem', // Set the icon size
-    cursor: 'pointer', // Changes the cursor on hover
+    flexDirection: 'column',
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: '12px',
+    padding: '24px',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
     ':hover': {
-      [`& .${iconFilledClassName}`]: {
-        display: 'none',
-      },
-      [`& .${iconRegularClassName}`]: {
-        display: 'inline',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+      backgroundColor: tokens.colorNeutralBackground2,
+    },
+    '@media (max-width: 768px)': {
+      padding: '20px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '16px',
+      ':hover': {
+        transform: 'none',
       },
     },
   },
-  editInput: {
-    flexGrow: 1,
-    marginRight: '0.5rem',
+  pinnedCard: {
+    backgroundColor: tokens.colorBrandBackground2,
+    borderLeft: `4px solid ${tokens.colorBrandStroke1}`,
   },
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '16px',
+    '@media (max-width: 768px)': {
+      marginBottom: '12px',
+    },
+    '@media (max-width: 480px)': {
+      gap: '8px',
+    },
+  },
+  titleSection: {
+    flex: 1,
+    minWidth: 0, // Allows text truncation
+  },
+  noteTitle: {
+    fontWeight: tokens.fontWeightSemibold,
+    fontSize: tokens.fontSizeBase400,
+    marginBottom: '8px',
+    wordBreak: 'break-word',
+    lineHeight: tokens.lineHeightBase400,
+    color: tokens.colorNeutralForeground1,
+    '@media (max-width: 480px)': {
+      fontSize: tokens.fontSizeBase300,
+    },
+  },
+  noteMetadata: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+    lineHeight: tokens.lineHeightBase200,
+    '@media (max-width: 480px)': {
+      fontSize: tokens.fontSizeBase100,
+    },
+  },
+  actionSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexShrink: 0,
+    '@media (max-width: 480px)': {
+      gap: '4px',
+    },
+  },
+  cardContent: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  noteContent: {
+    fontSize: tokens.fontSizeBase300,
+    lineHeight: tokens.lineHeightBase400,
+    color: tokens.colorNeutralForeground2,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    marginBottom: '16px',
+    flex: 1,
+    '@media (max-width: 480px)': {
+      fontSize: tokens.fontSizeBase200,
+      marginBottom: '12px',
+    },
+  },
+  tagsContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginBottom: '16px',
+    '@media (max-width: 480px)': {
+      marginBottom: '12px',
+      gap: '4px',
+    },
+  },
+  tag: {
+    fontSize: tokens.fontSizeBase200,
+    '@media (max-width: 480px)': {
+      fontSize: tokens.fontSizeBase100,
+    },
+  },
+  editForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    padding: '24px',
+    '@media (max-width: 768px)': {
+      padding: '20px',
+      gap: '12px',
+    },
+    '@media (max-width: 480px)': {
+      padding: '16px',
+      gap: '8px',
+    },
+  },
+  editButtons: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'flex-end',
+    marginTop: '8px',
+    '@media (max-width: 480px)': {
+      flexDirection: 'column-reverse',
+      gap: '8px',
+      marginTop: '12px',
+    },
+  },
+  emptyContent: {
+    fontStyle: 'italic',
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase200,
+  },
+  pinIcon: {
+    color: tokens.colorBrandForeground1,
+    fontSize: '14px',
+  },
+  highlight: { boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.6) !important' },
+  active: { outline: `2px solid ${tokens.colorBrandStroke1}` }
 });
 
-// TODO: Fix hover effect on the icon
-// TODO: Wrap note content to prevent overflow
-// TODO: Add card-like styling to the note
-// TODO: Add local storage to persist notes etc.
-// TODO: Add a confirmation dialog before deleting a note
-// TODO: Rearrange the notes using drag and drop
+const Note = ({ note, deleteNote, updateNote, togglePin, notes = [], _graph, onNavigate, registerRef, isActive, isHighlighted }) => {
+  const styles = useStyles();
+  const cardRef = useRef(null);
+  useEffect(() => { registerRef && registerRef(note.id, cardRef.current); }, [registerRef, note.id]);
 
-const Note = ({ id, content, deleteNote, updateNote }) => {
-  const styles = useIconStyles();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState(content);
+  const [editData, setEditData] = useState({
+    title: note.title || '',
+    content: note.content || '',
+    tags: (note.tags || []).join(', ')
+  });
 
-  const iconStyleProps = {
-    primaryFill: 'currentColor', // Use the text color for the icon
-    className: styles.icon,
+  const titleIndex = buildTitleIndex(notes);
+
+  const renderContent = () => {
+    if (!note.content) return <span className={styles.emptyContent}>No content</span>;
+    const tokens = tokenizeContentWithLinks(note.content);
+    if (tokens.length === 0) return note.content.length > 200 ? note.content.substring(0, 200) + '...' : note.content;
+    let charCount = 0;
+    const MAX = 220; // truncate after some chars for card view
+    const elements = [];
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      if (charCount >= MAX) break;
+      if (t.type === 'text') {
+        const remaining = MAX - charCount;
+        const slice = t.value.slice(0, remaining);
+        elements.push(slice);
+        charCount += slice.length;
+        if (slice.length < t.value.length) break;
+      } else if (t.type === 'wikilink') {
+        const norm = t.value.trim().replace(/\s+/g, ' ').toLowerCase();
+        const targetId = titleIndex.get(norm) || null;
+        const display = t.value;
+        const piece = (
+          <span
+            key={i + '-' + norm}
+            className={`wikilink ${!targetId ? 'unresolved' : ''}`}
+            onClick={e => {
+              e.stopPropagation();
+              if (!targetId) {
+                // unresolved: could prefill new note creation in future
+              } else if (onNavigate) {
+                onNavigate(targetId);
+              }
+            }}
+          >
+            {display}
+          </span>
+        );
+        const remaining = MAX - charCount;
+        if (display.length + 4 <= remaining) { // account for brackets not shown
+          elements.push(piece);
+          charCount += display.length;
+        } else {
+          break;
+        }
+      }
+    }
+    if (charCount >= MAX) elements.push('...');
+    return elements;
   };
 
   const handleSave = () => {
-    updateNote(id, editedContent);
+    const updatedNote = {
+      ...note,
+      title: editData.title.trim() || 'Untitled Note',
+      content: editData.content.trim(),
+      tags: editData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0),
+      updatedAt: new Date().toISOString()
+    };
+    
+    updateNote(note.id, updatedNote);
     setIsEditing(false);
   };
 
+  const handleCancel = () => {
+    setEditData({
+      title: note.title || '',
+      content: note.content || '',
+      tags: (note.tags || []).join(', ')
+    });
+    setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      deleteNote(note.id);
+    }
+  };
+
+  const handlePin = () => {
+    togglePin(note.id);
+  };
+
+  if (isEditing) {
+    return (
+      <Card className={styles.noteCard}>
+        <div className={styles.editForm}>
+          <Input
+            value={editData.title}
+            onChange={(e) => setEditData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder="Note title..."
+            size="large"
+          />
+          <Input
+            value={editData.tags}
+            onChange={(e) => setEditData(prev => ({ ...prev, tags: e.target.value }))}
+            placeholder="Tags (comma separated)"
+          />
+          <RichEditor
+            value={editData.content}
+            onChange={(html) => setEditData(prev => ({ ...prev, content: html }))}
+            placeholder="Note content..."
+          />
+          <div className={styles.editButtons}>
+            <Button appearance="secondary" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button appearance="primary" onClick={handleSave}>
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <div className={styles.iconContainer}>
-      {isEditing ? (
-        <Input
-          className={styles.editInput}
-          value={editedContent}
-          onChange={(e) => setEditedContent(e.target.value)}
-        />
-      ) : (
-        <span>{content}</span>
-      )}
-      <div className={styles.actions}>
-        {isEditing ? (
-          <Button appearance="primary" size="small" onClick={handleSave}>
-            Save
-          </Button>
-        ) : (
-          <Button
-            appearance="secondary"
-            size="small"
-            onClick={() => {
-              setIsEditing(true);
-              setEditedContent(content);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-        <DeleteIcon
-          {...iconStyleProps}
-          onClick={() => deleteNote(id)}
-          aria-label="Delete note"
-        />
+    <Card 
+      className={`${styles.noteCard} ${note.isPinned ? styles.pinnedCard : ''} ${isHighlighted ? styles.highlight : ''} ${isActive ? styles.active : ''}`}
+      onClick={() => setIsEditing(true)}
+      ref={cardRef}
+    >
+      <div className={styles.cardHeader}>
+        <div className={styles.titleSection}>
+          <Text className={styles.noteTitle}>
+            {note.title || 'Untitled Note'}
+          </Text>
+          <div className={styles.noteMetadata}>
+            <Text size={200}>
+              {note.updatedAt ? formatDate(note.updatedAt) : 'Just now'}
+            </Text>
+            {note.isPinned && (
+              <PinIcon className={styles.pinIcon} />
+            )}
+          </div>
+        </div>
+        
+        <div className={styles.actionSection}>
+          <Menu>
+            <MenuTrigger disableButtonEnhancement>
+              <Button 
+                appearance="subtle" 
+                icon={<MoreVerticalRegular />}
+                size="small"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem 
+                  icon={<EditRegular />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit Note
+                </MenuItem>
+                <MenuItem 
+                  icon={<PinIcon />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePin();
+                  }}
+                >
+                  {note.isPinned ? 'Unpin Note' : 'Pin Note'}
+                </MenuItem>
+                <MenuItem 
+                  icon={<DeleteRegular />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                  }}
+                >
+                  Delete Note
+                </MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        </div>
       </div>
-    </div>
+      
+      <div className={styles.cardContent}>
+        {note.tags && note.tags.length > 0 && (
+          <div className={styles.tagsContainer}>
+            {note.tags.map((tag, index) => (
+              <Badge 
+                key={index} 
+                className={styles.tag}
+                appearance="tint"
+                size="small"
+              >
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+        <div className={styles.noteContent}>
+          {note.content ? (
+            <div
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content, { ALLOWED_TAGS: ['b','strong','i','em','u','pre','code','blockquote','ul','ol','li','br','p','span'] , ALLOWED_ATTR: [] }) }}
+            />
+          ) : renderContent()}
+        </div>
+  {/* Links section removed per request; inline wiki links & global graph provide navigation */}
+      </div>
+    </Card>
   );
 };
 

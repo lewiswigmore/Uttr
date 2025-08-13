@@ -1,13 +1,22 @@
 {
   "name": "uttr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "description": "A modern, feature-rich note-taking application built with React and Fluent UI",
+  "keywords": [
+    "notes",
+    "react",
+    "fluent-ui",
+    "productivity",
+    "note-taking"
+  ],
   "dependencies": {
     "@fluentui/react-components": "^9.46.4",
     "@fluentui/react-icons": "^2.0.227",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "dompurify": "^3.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -17,13 +26,37 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.{js,jsx}",
+    "lint:fix": "eslint src/**/*.{js,jsx} --fix",
+    "format": "prettier --write src/**/*.{js,jsx,css,md}",
+    "analyze": "npm run build && npx serve -s build",
+    "update-browserslist": "npx update-browserslist-db@latest"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "prefer-const": "warn",
+      "react-hooks/exhaustive-deps": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -36,5 +69,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": ".",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lewiswigmore/Uttr.git"
+  },
+  "author": {
+    "name": "Lewis Wigmore",
+    "url": "https://github.com/lewiswigmore"
+  },
+  "license": "MIT"
 }
