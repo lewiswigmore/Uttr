@@ -23,6 +23,14 @@ function App() {
     setNotes(notes.filter(note => note.id !== id));
   };
 
+  const updateNote = (id, updatedContent) => {
+    setNotes(
+      notes.map((note) =>
+        note.id === id ? { ...note, content: updatedContent } : note
+      )
+    );
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -35,7 +43,13 @@ function App() {
         <NoteForm addNote={addNote} />
         <div className="notes-list">
           {notes.map((note) => (
-            <Note key={note.id} id={note.id} content={note.content} deleteNote={deleteNote} />
+            <Note
+              key={note.id}
+              id={note.id}
+              content={note.content}
+              deleteNote={deleteNote}
+              updateNote={updateNote}
+            />
           ))}
         </div>
       </main>
