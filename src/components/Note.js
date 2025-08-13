@@ -1,12 +1,12 @@
-import React from 'react';
-import { 
-    DeleteRegular, 
-    DeleteFilled, 
-    bundleIcon,
-    iconFilledClassName,
-    iconRegularClassName,
+import React, { useState } from 'react';
+import {
+  DeleteRegular,
+  DeleteFilled,
+  bundleIcon,
+  iconFilledClassName,
+  iconRegularClassName,
 } from '@fluentui/react-icons';
-import { makeStyles } from '@fluentui/react-components';
+import { Input, Button, makeStyles } from '@fluentui/react-components';
 
 // Bundle the regular and filled versions of the Delete icon
 const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
@@ -15,14 +15,17 @@ const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 const useIconStyles = makeStyles({
   iconContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: 'auto',
   },
   icon: {
     fontSize: '1rem', // Set the icon size
-    marginLeft: 'auto', // Pushes the icon to the right
     cursor: 'pointer', // Changes the cursor on hover
-    ':hover': { // Changes the icon color on hover
+    ':hover': {
       [`& .${iconFilledClassName}`]: {
         display: 'none',
       },
@@ -30,6 +33,10 @@ const useIconStyles = makeStyles({
         display: 'inline',
       },
     },
+  },
+  editInput: {
+    flexGrow: 1,
+    marginRight: '0.5rem',
   },
 });
 
@@ -40,18 +47,55 @@ const useIconStyles = makeStyles({
 // TODO: Add a confirmation dialog before deleting a note
 // TODO: Rearrange the notes using drag and drop
 
-const Note = ({ id, content, deleteNote }) => {
+const Note = ({ id, content, deleteNote, updateNote }) => {
   const styles = useIconStyles();
-  
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(content);
+
   const iconStyleProps = {
     primaryFill: 'currentColor', // Use the text color for the icon
     className: styles.icon,
   };
 
+  const handleSave = () => {
+    updateNote(id, editedContent);
+    setIsEditing(false);
+  };
+
   return (
     <div className={styles.iconContainer}>
-      {content}
-      <DeleteIcon {...iconStyleProps} onClick={() => deleteNote(id)} aria-label="Delete note" />
+      {isEditing ? (
+        <Input
+          className={styles.editInput}
+          value={editedContent}
+          onChange={(e) => setEditedContent(e.target.value)}
+        />
+      ) : (
+        <span>{content}</span>
+      )}
+      <div className={styles.actions}>
+        {isEditing ? (
+          <Button appearance="primary" size="small" onClick={handleSave}>
+            Save
+          </Button>
+        ) : (
+          <Button
+            appearance="secondary"
+            size="small"
+            onClick={() => {
+              setIsEditing(true);
+              setEditedContent(content);
+            }}
+          >
+            Edit
+          </Button>
+        )}
+        <DeleteIcon
+          {...iconStyleProps}
+          onClick={() => deleteNote(id)}
+          aria-label="Delete note"
+        />
+      </div>
     </div>
   );
 };
